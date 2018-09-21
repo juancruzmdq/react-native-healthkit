@@ -1,0 +1,18 @@
+{
+  "name": "react-native-healthkit",
+  "version": "0.1.0",
+  "description": "Native Module bridge for the Apple Health Kit",
+  "main": "index.js",
+  "bugs": {
+    "url": "https://github.com/workco/react-native-healthkit/issues"
+  },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/workco/react-native-healthkit.git"
+  },
+  "peerDependencies": {
+    "react-native": "0.55.4"
+  },
+  "author": "Carlos Conejo",
+  "license": "MIT"
+}
