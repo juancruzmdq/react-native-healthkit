@@ -8,6 +8,10 @@ NSString * RCTHealthKitTypeOperationWriteKey = @"write";
 NSString * RCTHealthKitTypeDateOfBirth = @"DateOfBirth";
 NSString * RCTHealthKitTypeWorkout = @"Workouts";
 
+NSString * RCTHealthKitAuthorizationStatusAuthorized = @"AuthorizationStatusSharingAuthorized";
+NSString * RCTHealthKitAuthorizationStatusDenied = @"AuthorizationStatusSharingDenied";
+NSString * RCTHealthKitAuthorizationStatusNotDetermined = @"AuthorizationStatusSharingNotDetermined";
+
 @implementation RCTHealthKitTypes
 
 + (NSDictionary *)_writeTypes {
