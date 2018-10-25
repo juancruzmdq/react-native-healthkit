@@ -8,6 +8,10 @@ FOUNDATION_EXPORT NSString * RCTHealthKitTypeOperationWriteKey;
 FOUNDATION_EXPORT NSString * RCTHealthKitTypeDateOfBirth;
 FOUNDATION_EXPORT NSString * RCTHealthKitTypeWorkout;
 
+FOUNDATION_EXPORT NSString * RCTHealthKitAuthorizationStatusAuthorized;
+FOUNDATION_EXPORT NSString * RCTHealthKitAuthorizationStatusDenied;
+FOUNDATION_EXPORT NSString * RCTHealthKitAuthorizationStatusNotDetermined;
+
 @interface RCTHealthKitTypes : NSObject
 
 @property (class, readonly) NSDictionary *_readTypes;

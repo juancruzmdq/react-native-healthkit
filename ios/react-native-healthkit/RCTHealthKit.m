@@ -65,10 +65,13 @@ RCT_EXPORT_METHOD(getWritePermissionStatus:(NSString *)permissionName
     }
     switch ([[self _healthStore] authorizationStatusForType:type]) {
         case HKAuthorizationStatusSharingAuthorized:
-            resolve(@(true));
+            resolve(RCTHealthKitAuthorizationStatusAuthorized);
             break;
-        default:
-            resolve(@(false));
+        case HKAuthorizationStatusNotDetermined:
+            resolve(RCTHealthKitAuthorizationStatusNotDetermined);
+            break;
+        case HKAuthorizationStatusSharingDenied:
+            resolve(RCTHealthKitAuthorizationStatusDenied);
             break;
     };
 }
@@ -109,6 +112,9 @@ RCT_EXPORT_METHOD(getWorkoutsByMetadata:(NSString*)key
            @"RCTHealthKitTypeOperationReadKey": RCTHealthKitTypeOperationReadKey,
            @"RCTHealthKitTypeOperationWriteKey": RCTHealthKitTypeOperationWriteKey,
            @"RCTHealthKitTypeDateOfBirth": RCTHealthKitTypeDateOfBirth,
+           @"RCTHealthKitAuthorizationStatusAuthorized": RCTHealthKitAuthorizationStatusAuthorized,
+           @"RCTHealthKitAuthorizationStatusDenied": RCTHealthKitAuthorizationStatusDenied,
+           @"RCTHealthKitAuthorizationStatusNotDetermined": RCTHealthKitAuthorizationStatusNotDetermined
            };
 }
 

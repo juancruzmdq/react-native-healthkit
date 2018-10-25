@@ -63,5 +63,11 @@ export default {
     const workouts = await RNHealthKit.getWorkoutsByMetadata(key, value);
     return workouts.map(convertWorkoutDates);
   },
+  Constants: {
+    writePermissionStatus: {
+      authorized: 'AuthorizationStatusSharingAuthorized',
+      denied: 'AuthorizationStatusSharingDenied',
+      notDetermined: 'AuthorizationStatusSharingNotDetermined'
+    }
+  }
 };
-
