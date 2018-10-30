@@ -63,11 +63,43 @@ export default {
     const workouts = await RNHealthKit.getWorkoutsByMetadata(key, value);
     return workouts.map(convertWorkoutDates);
   },
+  getWeights: async (unit, startDate, endDate) => {
+    if (!isIOS) {
+      return Promise.resolve([]);
+    }
+
+    if (!unit) {
+      throw new Error('no unit provided');
+    }
+
+    console.log({ RNHealthKit });
+    return await RNHealthKit.getWeightsWithUnit(unit, startDate, endDate);
+  },
+  addWeight: async (weight, unit) => {
+    if (!isIOS) {
+      return Promise.resolve();
+    }
+
+    if (!unit) {
+      throw new Error('no unit provided');
+    }
+
+    return await RNHealthKit.addWeight(weight, unit);
+  },
   Constants: {
     writePermissionStatus: {
-      authorized: 'AuthorizationStatusSharingAuthorized',
-      denied: 'AuthorizationStatusSharingDenied',
-      notDetermined: 'AuthorizationStatusSharingNotDetermined'
+      authorized: RNHealthKit.RCTHealthKitAuthorizationStatusAuthorized,
+      denied: RNHealthKit.RCTHealthKitAuthorizationStatusDenied,
+      notDetermined: RNHealthKit.RCTHealthKitAuthorizationStatusNotDetermined
+    },
+    units: {
+      kilo: RNHealthKit.RCTHealthKitUnitTypeKilo,
+      pounds: RNHealthKit.RCTHealthKitUnitTypePounds,
+    },
+    dataTypes: {
+      dateOfBirth: RNHealthKit.RCTHealthKitTypeDateOfBirth,
+      weight: RNHealthKit.RCTHealthKitTypeWeight,
+      workouts: RNHealthKit.RCTHealthKitTypeWorkout,
     }
   }
 };

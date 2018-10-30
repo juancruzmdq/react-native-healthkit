@@ -105,6 +105,41 @@ RCT_EXPORT_METHOD(getWorkoutsByMetadata:(NSString*)key
     [self _getWorkoutsByMetadata:key value:value resolve:resolve reject:reject];
 }
 
+#pragma mark - Weight
+
+RCT_EXPORT_METHOD(getWeightsWithUnit:(NSString *)unit
+                  startDate:(NSDate *)startDate
+                  endDate:(NSDate *)endDate
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject){
+    [self _initializeHealthStore];
+    [self _getWeightsWithUnit:[self convertUnit:unit]
+                    startDate:startDate
+                      endDate:endDate
+                      resolve:resolve
+                       reject:reject];
+}
+
+RCT_EXPORT_METHOD(addWeight:(float)weight
+                  unit:(NSString *)unit
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject){
+    [self _initializeHealthStore];
+    [self _addWeight:weight
+                unit:[self convertUnit:unit]
+             resolve:resolve reject:reject];
+}
+
+- (HKUnit *)convertUnit:(NSString *)unit {
+    if ([unit isEqualToString:RCTHealthKitUnitTypeKilo]) {
+        return [HKUnit gramUnitWithMetricPrefix:HKMetricPrefixKilo];
+    } else if ([unit isEqualToString:RCTHealthKitUnitTypePounds]) {
+        return [HKUnit poundUnit];
+    }
+
+    return nil;
+}
+
 - (NSDictionary *)constantsToExport {
   return @{
            @"isAvailable": @([self _isAvailable]),
@@ -114,7 +149,9 @@ RCT_EXPORT_METHOD(getWorkoutsByMetadata:(NSString*)key
            @"RCTHealthKitTypeDateOfBirth": RCTHealthKitTypeDateOfBirth,
            @"RCTHealthKitAuthorizationStatusAuthorized": RCTHealthKitAuthorizationStatusAuthorized,
            @"RCTHealthKitAuthorizationStatusDenied": RCTHealthKitAuthorizationStatusDenied,
-           @"RCTHealthKitAuthorizationStatusNotDetermined": RCTHealthKitAuthorizationStatusNotDetermined
+           @"RCTHealthKitAuthorizationStatusNotDetermined": RCTHealthKitAuthorizationStatusNotDetermined,
+           @"RCTHealthKitUnitTypeKilo": RCTHealthKitUnitTypeKilo,
+           @"RCTHealthKitUnitTypePounds": RCTHealthKitUnitTypePounds,
            };
 }
 

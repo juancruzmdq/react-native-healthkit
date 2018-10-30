@@ -7,24 +7,30 @@ NSString * RCTHealthKitTypeOperationWriteKey = @"write";
 
 NSString * RCTHealthKitTypeDateOfBirth = @"DateOfBirth";
 NSString * RCTHealthKitTypeWorkout = @"Workouts";
+NSString * RCTHealthKitTypeWeight = @"Weight";
 
 NSString * RCTHealthKitAuthorizationStatusAuthorized = @"AuthorizationStatusSharingAuthorized";
 NSString * RCTHealthKitAuthorizationStatusDenied = @"AuthorizationStatusSharingDenied";
 NSString * RCTHealthKitAuthorizationStatusNotDetermined = @"AuthorizationStatusSharingNotDetermined";
 
+NSString * RCTHealthKitUnitTypeKilo = @"Kilo";
+NSString * RCTHealthKitUnitTypePounds = @"Pounds";
+
 @implementation RCTHealthKitTypes
 
 + (NSDictionary *)_writeTypes {
     return @{
-             RCTHealthKitTypeWorkout : [HKObjectType workoutType],
-             };
+        RCTHealthKitTypeWorkout : [HKObjectType workoutType],
+        RCTHealthKitTypeWeight: [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass]
+    };
 }
 
 + (NSDictionary *)_readTypes {
   return @{
            RCTHealthKitTypeDateOfBirth : [HKObjectType
                              characteristicTypeForIdentifier:HKCharacteristicTypeIdentifierDateOfBirth],
-           RCTHealthKitTypeWorkout : [HKObjectType workoutType]
+           RCTHealthKitTypeWorkout : [HKObjectType workoutType],
+           RCTHealthKitTypeWeight: [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass]
            };
 }
 

@@ -39,7 +39,7 @@
     }];
 }
 
-- (NSDictionary*)convertHKSample:(HKSample*)sample {
+- (NSDictionary*)convertHKSample:(HKSample*)sample unit:(HKUnit *)unit {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     if([sample startDate]){
         dictionary[@"startDate"] = [[sample startDate] description];
@@ -47,11 +47,15 @@
     if([sample endDate]) {
         dictionary[@"endDate"] = [[sample endDate] description];
     }
-    if([((HKWorkout *)sample) totalEnergyBurned]) {
+    if([sample isKindOfClass:[HKWorkout class]] && [((HKWorkout *)sample) totalEnergyBurned]) {
         double calories =  [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit calorieUnit]];
         if(calories) {
             dictionary[@"calories"] = [NSNumber numberWithFloat:calories];
         }
+    }
+    if([sample isKindOfClass:[HKQuantitySample class]]) {
+        HKQuantitySample *quantity = (HKQuantitySample *)sample;
+        dictionary[@"count"] = @([quantity.quantity doubleValueForUnit:unit]);
     }
     if([sample metadata]) {
         dictionary[@"metadata"] = [sample metadata];
@@ -69,7 +73,7 @@
         } else {
             NSMutableArray *array = [[NSMutableArray alloc] init];
             for(id object in results) {
-                [array addObject:[self convertHKSample:object]];
+                [array addObject:[self convertHKSample:object unit:nil]];
             }
             resolve(array);
         }
@@ -92,7 +96,7 @@
         } else {
             NSMutableArray *array = [[NSMutableArray alloc] init];
             for(id object in results) {
-                [array addObject:[self convertHKSample:object]];
+                [array addObject:[self convertHKSample:object unit:nil]];
             }
             resolve(array);
         }
@@ -100,5 +104,60 @@
 
     [[self _healthStore] executeQuery:sampleQuery];
 }
+
+#pragma mark - Weight
+
+- (void)_getWeightsWithUnit:(HKUnit *)unit
+                  startDate:(NSDate *)startDate
+                    endDate:(NSDate *)endDate
+                    resolve:(RCTPromiseResolveBlock)resolve
+                     reject:(RCTPromiseRejectBlock)reject {
+    HKQuery *query = [HKQuery predicateForSamplesWithStartDate:startDate endDate:endDate options:HKQueryOptionNone];
+    HKSampleType *sampleType = [HKSampleType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass];
+    HKSampleQuery *sampleQuery = [[HKSampleQuery alloc]
+        initWithSampleType:sampleType
+        predicate:query
+        limit:HKObjectQueryNoLimit
+        sortDescriptors:nil
+        resultsHandler:^(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(error) {
+                    reject(@"RCTHealthKit_read_weight_fail", @"An error occured while reading weight", error);
+                } else {
+                    NSMutableArray *array = [[NSMutableArray alloc] init];
+                    for(id object in results) {
+                        [array addObject:[self convertHKSample:object unit:unit]];
+                    }
+                    resolve(array);
+                }
+            });
+        }
+    ];
+    
+    [[self _healthStore] executeQuery:sampleQuery];
+}
+
+- (void)_addWeight:(float)weight
+              unit:(HKUnit *)unit
+              resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
+    HKQuantity *weightQuantity = [HKQuantity quantityWithUnit:unit doubleValue:weight];
+
+    HKQuantitySample *weightSample = [HKQuantitySample
+                                      quantitySampleWithType:[HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass]
+                                      quantity:weightQuantity
+                                      startDate:[NSDate date]
+                                      endDate:[NSDate date]
+                                      ];
+
+    [self._healthStore saveObject:weightSample withCompletion:^(BOOL success, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(!success) {
+                reject(@"RCTHealthKit_add_weight_fail", @"An error occurred while saving the weight", error);
+            }
+            resolve(nil);
+        });
+    }];
+};
 
 @end
