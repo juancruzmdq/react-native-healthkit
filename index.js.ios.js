@@ -54,6 +54,9 @@ export default {
 
     return await RNHealthKit.addWeight(weight, unit);
   },
+  getDefaultSource: async () => {
+    return await RNHealthKit.getDefaultSource();
+  },
   Constants: {
     writePermissionStatus: {
       authorized: RNHealthKit.RCTHealthKitAuthorizationStatusAuthorized,

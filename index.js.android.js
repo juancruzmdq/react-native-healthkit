@@ -20,6 +20,7 @@ export default {
     Promise.resolve([]),
   addWeight: async (weight, unit) =>
     Promise.resolve(),
+  getDefaultSource: async () => Promise.resolve(null),
   Constants: {
     writePermissionStatus: {
       authorized: '',

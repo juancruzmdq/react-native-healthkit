@@ -140,6 +140,12 @@ RCT_EXPORT_METHOD(addWeight:(float)weight
     return nil;
 }
 
+RCT_EXPORT_METHOD(getDefaultSource:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject){
+    [self _initializeHealthStore];
+    [self _getDefaultSource:resolve reject:reject];
+}
+
 - (NSDictionary *)constantsToExport {
   return @{
            @"isAvailable": @([self _isAvailable]),

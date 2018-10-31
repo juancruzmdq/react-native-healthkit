@@ -20,6 +20,9 @@
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject;
 
+- (void)_getDefaultSource:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject;
+
 #pragma mark - Weight
 
 - (void)_getWeightsWithUnit:(HKUnit *)unit

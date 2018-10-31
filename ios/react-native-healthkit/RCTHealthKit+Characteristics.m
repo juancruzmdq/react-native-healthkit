@@ -107,6 +107,19 @@
     [[self _healthStore] executeQuery:sampleQuery];
 }
 
+- (NSDictionary*)convertHKSource:(HKSource*)source {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"name"] = [source name];
+    dictionary[@"bundleIdentifier"] = [source bundleIdentifier];
+    return dictionary;
+}
+
+- (void)_getDefaultSource:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
+    HKSource *source = [HKSource defaultSource];
+    resolve([self convertHKSource:source]);
+}
+
 #pragma mark - Weight
 
 - (void)_getWeightsWithUnit:(HKUnit *)unit
