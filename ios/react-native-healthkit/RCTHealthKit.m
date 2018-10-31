@@ -147,6 +147,8 @@ RCT_EXPORT_METHOD(addWeight:(float)weight
            @"RCTHealthKitTypeOperationReadKey": RCTHealthKitTypeOperationReadKey,
            @"RCTHealthKitTypeOperationWriteKey": RCTHealthKitTypeOperationWriteKey,
            @"RCTHealthKitTypeDateOfBirth": RCTHealthKitTypeDateOfBirth,
+           @"RCTHealthKitTypeWeight": RCTHealthKitTypeWeight,
+           @"RCTHealthKitTypeWorkout": RCTHealthKitTypeWorkout,
            @"RCTHealthKitAuthorizationStatusAuthorized": RCTHealthKitAuthorizationStatusAuthorized,
            @"RCTHealthKitAuthorizationStatusDenied": RCTHealthKitAuthorizationStatusDenied,
            @"RCTHealthKitAuthorizationStatusNotDetermined": RCTHealthKitAuthorizationStatusNotDetermined,
