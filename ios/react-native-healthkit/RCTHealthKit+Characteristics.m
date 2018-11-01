@@ -49,11 +49,16 @@
     if([sample endDate]) {
         dictionary[@"endDate"] = [dateFormatter stringFromDate:[sample endDate]];
     }
-    if([sample isKindOfClass:[HKWorkout class]] && [((HKWorkout *)sample) totalEnergyBurned]) {
-        double calories =  [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit calorieUnit]];
-        if(calories) {
+    if([sample isKindOfClass:[HKWorkout class]]) {
+        if ([((HKWorkout *)sample) totalEnergyBurned]) {
+            double calories = [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit smallCalorieUnit]];
             dictionary[@"calories"] = [NSNumber numberWithFloat:calories];
         }
+        if ([((HKWorkout *)sample) totalDistance]) {
+            double distance = [[((HKWorkout *)sample) totalDistance] doubleValueForUnit:[HKUnit meterUnitWithMetricPrefix:HKMetricPrefixKilo]];
+            dictionary[@"distance"] = [NSNumber numberWithFloat:distance];
+        }
+        dictionary[@"activityType"] = [[NSNumber alloc] initWithInt:[((HKWorkout *)sample) workoutActivityType]];
     }
     if([sample isKindOfClass:[HKQuantitySample class]]) {
         HKQuantitySample *quantity = (HKQuantitySample *)sample;
@@ -62,6 +67,8 @@
     if([sample metadata]) {
         dictionary[@"metadata"] = [sample metadata];
     }
+    dictionary[@"id"] = [[sample UUID] UUIDString];
+    dictionary[@"source"] = [self convertHKSource:[[sample sourceRevision] source]];
     return dictionary;
 }
 
