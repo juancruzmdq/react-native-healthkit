@@ -65,11 +65,13 @@
     return dictionary;
 }
 
-- (void)_getWorkouts:(RCTPromiseResolveBlock)resolve
-                reject:(RCTPromiseRejectBlock)reject {
-    HKQuery *query = [HKQuery predicateForObjectsFromSource:[HKSource defaultSource]];
+- (void)_getWorkoutsWithStartDate:(NSDate*)startDate
+              endDate:(NSDate*)endDate
+              resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
+    HKQuery *query = [HKQuery predicateForSamplesWithStartDate:startDate endDate:endDate options:HKQueryOptionNone];
     HKSampleType *sampleType = [HKSampleType workoutType];
-    HKSampleQuery *sampleQuery = [[HKSampleQuery alloc] initWithSampleType:sampleType predicate:query limit:0 sortDescriptors:nil resultsHandler:^(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error) {
+    HKSampleQuery *sampleQuery = [[HKSampleQuery alloc] initWithSampleType:sampleType predicate:query limit:HKObjectQueryNoLimit sortDescriptors:nil resultsHandler:^(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error) {
         if(error) {
             reject(@"RCTHealthKit_read_workouts_fail", @"An error occured while reading workouts", error);
         } else {
@@ -148,7 +150,6 @@
             });
         }
     ];
-    
     [[self _healthStore] executeQuery:sampleQuery];
 }
 

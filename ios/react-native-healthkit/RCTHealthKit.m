@@ -91,10 +91,12 @@ RCT_EXPORT_METHOD(addWorkout:(NSDate*)startDate
     [self _addWorkout:startDate endDate:endDate calories:calories metadata:metadata resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(getWorkouts:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject){
+RCT_EXPORT_METHOD(getWorkouts:(NSDate*)startDate
+                  endDate:(NSDate*)endDate
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
     [self _initializeHealthStore];
-    [self _getWorkouts:resolve reject:reject];
+    [self _getWorkoutsWithStartDate:startDate endDate:endDate resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getWorkoutsByMetadata:(NSString*)key

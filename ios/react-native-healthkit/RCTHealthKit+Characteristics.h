@@ -12,7 +12,9 @@
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject;
 
-- (void)_getWorkouts:(RCTPromiseResolveBlock)resolve
+- (void)_getWorkoutsWithStartDate:(NSDate*)startDate
+              endDate:(NSDate*)endDate
+              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject;
 
 - (void)_getWorkoutsByMetadata:(NSString*)key

@@ -29,8 +29,8 @@ export default {
       workout.calories,
       workout.metadata,
     ),
-  getWorkouts: async () => {
-    const workouts = await RNHealthKit.getWorkouts();
+  getWorkouts: async (startDate = null, endDate = null) => {
+    const workouts = await RNHealthKit.getWorkouts(startDate, endDate);
     return workouts.map(convertWorkoutDates);
   },
   getWorkoutsByMetadata: async (

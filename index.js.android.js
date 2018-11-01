@@ -9,7 +9,7 @@ export default {
     Promise.resolve(),
   addWorkout: (workout) =>
     Promise.resolve(),
-  getWorkouts: async () =>
+  getWorkouts: async (startDate, endDate) =>
     Promise.resolve([]),
   getWorkoutsByMetadata: async (
     key,
