@@ -41,11 +41,13 @@
 
 - (NSDictionary*)convertHKSample:(HKSample*)sample unit:(HKUnit *)unit {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.dateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'";
     if([sample startDate]){
-        dictionary[@"startDate"] = [[sample startDate] description];
+        dictionary[@"startDate"] = [dateFormatter stringFromDate:[sample startDate]];
     }
     if([sample endDate]) {
-        dictionary[@"endDate"] = [[sample endDate] description];
+        dictionary[@"endDate"] = [dateFormatter stringFromDate:[sample endDate]];
     }
     if([sample isKindOfClass:[HKWorkout class]] && [((HKWorkout *)sample) totalEnergyBurned]) {
         double calories =  [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit calorieUnit]];
