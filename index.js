@@ -87,19 +87,36 @@ export default {
     return await RNHealthKit.addWeight(weight, unit);
   },
   Constants: {
-    writePermissionStatus: {
-      authorized: RNHealthKit.RCTHealthKitAuthorizationStatusAuthorized,
-      denied: RNHealthKit.RCTHealthKitAuthorizationStatusDenied,
-      notDetermined: RNHealthKit.RCTHealthKitAuthorizationStatusNotDetermined
-    },
-    units: {
-      kilo: RNHealthKit.RCTHealthKitUnitTypeKilo,
-      pounds: RNHealthKit.RCTHealthKitUnitTypePounds,
-    },
-    dataTypes: {
-      dateOfBirth: RNHealthKit.RCTHealthKitTypeDateOfBirth,
-      weight: RNHealthKit.RCTHealthKitTypeWeight,
-      workouts: RNHealthKit.RCTHealthKitTypeWorkout,
-    }
+    ...(isIOS ? {
+      writePermissionStatus: {
+        authorized: RNHealthKit.RCTHealthKitAuthorizationStatusAuthorized,
+        denied: RNHealthKit.RCTHealthKitAuthorizationStatusDenied,
+        notDetermined: RNHealthKit.RCTHealthKitAuthorizationStatusNotDetermined
+      },
+      units: {
+        kilo: RNHealthKit.RCTHealthKitUnitTypeKilo,
+        pounds: RNHealthKit.RCTHealthKitUnitTypePounds,
+      },
+      dataTypes: {
+        dateOfBirth: RNHealthKit.RCTHealthKitTypeDateOfBirth,
+        weight: RNHealthKit.RCTHealthKitTypeWeight,
+        workouts: RNHealthKit.RCTHealthKitTypeWorkout,
+      }
+    } : {
+      writePermissionStatus: {
+        authorized: '',
+        denied: '',
+        notDetermined: ''
+      },
+      units: {
+        kilo: '',
+        pounds: '',
+      },
+      dataTypes: {
+        dateOfBirth: '',
+        weight: '',
+        workouts: '',
+      }
+    })
   }
 };
