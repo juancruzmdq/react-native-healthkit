@@ -124,11 +124,13 @@ RCT_EXPORT_METHOD(getWeightsWithUnit:(NSString *)unit
 
 RCT_EXPORT_METHOD(addWeight:(float)weight
                   unit:(NSString *)unit
+                  date:(NSDate *)date
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject){
     [self _initializeHealthStore];
     [self _addWeight:weight
                 unit:[self convertUnit:unit]
+                date:date
              resolve:resolve reject:reject];
 }
 

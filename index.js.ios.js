@@ -46,12 +46,12 @@ export default {
 
     return await RNHealthKit.getWeightsWithUnit(unit, startDate, endDate);
   },
-  addWeight: async (weight, unit) => {
+  addWeight: async (weight, unit, date = null) => {
     if (!unit) {
       throw new Error('no unit provided');
     }
 
-    return await RNHealthKit.addWeight(weight, unit);
+    return await RNHealthKit.addWeight(weight, unit, date);
   },
   getDefaultSource: async () => {
     return await RNHealthKit.getDefaultSource();

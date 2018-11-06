@@ -18,7 +18,7 @@ export default {
     Promise.resolve([]),
   getWeights: async (unit, startDate, endDate) =>
     Promise.resolve([]),
-  addWeight: async (weight, unit) =>
+  addWeight: async (weight, unit, date = null) =>
     Promise.resolve(),
   getDefaultSource: async () => Promise.resolve(null),
   Constants: {

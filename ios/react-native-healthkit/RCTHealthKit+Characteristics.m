@@ -162,6 +162,7 @@
 
 - (void)_addWeight:(float)weight
               unit:(HKUnit *)unit
+              date:(NSDate *)date
               resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
     HKQuantity *weightQuantity = [HKQuantity quantityWithUnit:unit doubleValue:weight];
@@ -169,8 +170,8 @@
     HKQuantitySample *weightSample = [HKQuantitySample
                                       quantitySampleWithType:[HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass]
                                       quantity:weightQuantity
-                                      startDate:[NSDate date]
-                                      endDate:[NSDate date]
+                                      startDate:(date ?: [NSDate date])
+                                      endDate:(date ?: [NSDate date])
                                       ];
 
     [self._healthStore saveObject:weightSample withCompletion:^(BOOL success, NSError * _Nullable error) {

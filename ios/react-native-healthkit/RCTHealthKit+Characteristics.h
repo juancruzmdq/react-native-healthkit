@@ -35,6 +35,7 @@
 
 - (void)_addWeight:(float)weight
               unit:(HKUnit *)unit
+              date:(NSDate *)date
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject;
 
