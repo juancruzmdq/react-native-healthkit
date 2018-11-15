@@ -42,6 +42,8 @@
 - (NSDictionary*)convertHKSample:(HKSample*)sample unit:(HKUnit *)unit {
     NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
     dateFormatter.dateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'";
     if([sample startDate]){
         dictionary[@"startDate"] = [dateFormatter stringFromDate:[sample startDate]];
