@@ -186,4 +186,41 @@
     }];
 };
 
+#pragma mark - Generic Quantity
+
+- (void)_getQuantity:(NSString *)quantityIdentifier
+                unit:(NSString *)unit
+           startDate:(NSDate *)startDate
+             endDate:(NSDate *)endDate
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject {
+    HKQuery *query = [HKQuery predicateForSamplesWithStartDate:startDate endDate:endDate options:HKQueryOptionNone];
+    HKSampleType *sampleType = [HKSampleType quantityTypeForIdentifier:quantityIdentifier];
+    HKSampleQuery *sampleQuery = [[HKSampleQuery alloc]
+                                  initWithSampleType:sampleType
+                                  predicate:query
+                                  limit:HKObjectQueryNoLimit
+                                  sortDescriptors:nil
+                                  resultsHandler:^(
+                                                   HKSampleQuery * _Nonnull query,
+                                                   NSArray<__kindof HKSample *> * _Nullable results,
+                                                   NSError * _Nullable error
+                                                   ) {
+                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                          if(error) {
+                                              reject(@"RCTHealthKit_read_quantity_fail", @"An error occured while reading quantity", error);
+                                          } else {
+                                              NSMutableArray *array = [[NSMutableArray alloc] init];
+                                              for(id object in results) {
+                                                  [array addObject:[self convertHKSample:object unit:unit]];
+                                              }
+                                              resolve(array);
+                                          }
+                                      });
+                                  }
+                                  ];
+
+    [self._healthStore executeQuery:sampleQuery];
+}
+
 @end

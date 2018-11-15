@@ -39,4 +39,13 @@
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject;
 
+#pragma mark - Generic Quantity
+
+- (void)_getQuantity:(NSString *)quantityIdentifier
+                unit:(NSString *)unit
+           startDate:(NSDate *)startDate
+             endDate:(NSDate *)endDate
+             resolve:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject;
+
 @end

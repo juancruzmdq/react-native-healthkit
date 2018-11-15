@@ -10,31 +10,31 @@
 }
 
 - (BOOL)_isAuthorizedForType:(NSString *)type {
-  HKObjectType *hkType = RCTHealthKitTypes._readTypes[type];
-  if (!hkType) {
-    return false;
-  }
+    HKObjectType *hkType = [RCTHealthKitTypes _getWriteType:type];
+    if (!hkType) {
+        return false;
+    }
 
-  return [self._healthStore authorizationStatusForType:hkType] ==
+    return [self._healthStore authorizationStatusForType:hkType] ==
     HKAuthorizationStatusSharingAuthorized;
 }
 
 - (void)_rejectWithType:(RCTHealthKitErrorType)type rejecter:(RCTPromiseRejectBlock)reject {
-  reject(
-         [RCTHealthKitError _rejectKeyWithType:type],
-         [RCTHealthKitError _rejectMessageWithType:type],
-         [RCTHealthKitError _rejectErrorWithType:type]
-         );
+    reject(
+           [RCTHealthKitError _rejectKeyWithType:type],
+           [RCTHealthKitError _rejectMessageWithType:type],
+           [RCTHealthKitError _rejectErrorWithType:type]
+           );
 }
 
 - (void)_rejectWithType:(RCTHealthKitErrorType)type
-                 error: (NSError *)error
-              rejecter:(RCTPromiseRejectBlock)reject {
-  reject(
-         [RCTHealthKitError _rejectKeyWithType:type],
-         [RCTHealthKitError _rejectMessageWithType:type],
-         error
-         );
+                  error: (NSError *)error
+               rejecter:(RCTPromiseRejectBlock)reject {
+    reject(
+           [RCTHealthKitError _rejectKeyWithType:type],
+           [RCTHealthKitError _rejectMessageWithType:type],
+           error
+           );
 }
 
 @end

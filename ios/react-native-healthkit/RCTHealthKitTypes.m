@@ -7,7 +7,6 @@ NSString * RCTHealthKitTypeOperationWriteKey = @"write";
 
 NSString * RCTHealthKitTypeDateOfBirth = @"DateOfBirth";
 NSString * RCTHealthKitTypeWorkout = @"Workouts";
-NSString * RCTHealthKitTypeWeight = @"Weight";
 
 NSString * RCTHealthKitAuthorizationStatusAuthorized = @"AuthorizationStatusSharingAuthorized";
 NSString * RCTHealthKitAuthorizationStatusDenied = @"AuthorizationStatusSharingDenied";
@@ -15,47 +14,47 @@ NSString * RCTHealthKitAuthorizationStatusNotDetermined = @"AuthorizationStatusS
 
 NSString * RCTHealthKitUnitTypeKilo = @"Kilo";
 NSString * RCTHealthKitUnitTypePounds = @"Pounds";
+NSString * RCTHealthKitUnitTypeCalories = @"Calories";
 
 @implementation RCTHealthKitTypes
 
 + (NSDictionary *)_writeTypes {
     return @{
-        RCTHealthKitTypeWorkout : [HKObjectType workoutType],
-        RCTHealthKitTypeWeight: [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass]
-    };
+             RCTHealthKitTypeWorkout : [HKObjectType workoutType],
+             };
 }
 
 + (NSDictionary *)_readTypes {
-  return @{
-           RCTHealthKitTypeDateOfBirth : [HKObjectType
-                             characteristicTypeForIdentifier:HKCharacteristicTypeIdentifierDateOfBirth],
-           RCTHealthKitTypeWorkout : [HKObjectType workoutType],
-           RCTHealthKitTypeWeight: [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMass]
-           };
+    return @{
+             RCTHealthKitTypeDateOfBirth : [HKObjectType
+                                            characteristicTypeForIdentifier:HKCharacteristicTypeIdentifierDateOfBirth],
+             RCTHealthKitTypeWorkout : [HKObjectType workoutType],
+             };
 }
 
 + (NSSet *)_getReadHKTypes:(NSArray *)types; {
-  NSMutableSet *hkTypes = [NSMutableSet new];
+    NSMutableSet *hkTypes = [NSMutableSet new];
 
-  for (NSString *type in types) {
-    HKObjectType *hkType = [self._readTypes objectForKey:type];
-    if (hkType) {
-      [hkTypes addObject:hkType];
+    for (NSString *type in types) {
+        HKObjectType *hkType = [self _getWriteType:type];
+        if (hkType) {
+            [hkTypes addObject:hkType];
+        }
     }
-  }
 
-  return hkTypes;
+    return hkTypes;
 }
 
 + (HKObjectType *)_getWriteType:(NSString *)type {
-    return [self._writeTypes objectForKey:type];
+    HKObjectType *result = self._readTypes[type];
+    return result ?: [HKObjectType quantityTypeForIdentifier:type];
 }
 
 + (NSSet *)_getWriteHKTypes:(NSArray *)types; {
     NSMutableSet *hkTypes = [NSMutableSet new];
     if(types) {
         for(NSString *type in types) {
-            HKObjectType *hkType = [self._writeTypes objectForKey:type];
+            HKObjectType *hkType = [self _getWriteType:type];
             if(hkType) {
                 [hkTypes addObject:hkType];
             }

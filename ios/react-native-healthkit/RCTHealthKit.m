@@ -1,6 +1,7 @@
 #import "RCTHealthKit.h"
 #import "RCTHealthKit+Utils.h"
 #import "RCTHealthKit+Characteristics.h"
+#import "RCTHealthKitDataModels.h"
 
 @implementation RCTHealthKit
 
@@ -134,11 +135,33 @@ RCT_EXPORT_METHOD(addWeight:(float)weight
              resolve:resolve reject:reject];
 }
 
+#pragma mark - Generic Quantity
+
+RCT_EXPORT_METHOD(getQuantity:(NSString *)quantityIdentifier
+                  unit:(NSString *)unit
+                  startDate:(NSDate *)startDate
+                  endDate:(NSDate *)endDate
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject){
+    [self _getQuantity:quantityIdentifier
+                  unit:[self convertUnit:unit]
+             startDate:startDate
+               endDate:endDate
+               resolve:resolve
+                reject:reject];
+}
+
 - (HKUnit *)convertUnit:(NSString *)unit {
     if ([unit isEqualToString:RCTHealthKitUnitTypeKilo]) {
         return [HKUnit gramUnitWithMetricPrefix:HKMetricPrefixKilo];
     } else if ([unit isEqualToString:RCTHealthKitUnitTypePounds]) {
         return [HKUnit poundUnit];
+    } else if ([unit isEqualToString:RCTHealthKitUnitTypeCalories]) {
+        if (@available(iOS 11, *)) {
+            return HKUnit.smallCalorieUnit;
+        } else {
+            return HKUnit.calorieUnit;
+        }
     }
 
     return nil;
@@ -156,87 +179,11 @@ RCT_EXPORT_METHOD(getDefaultSource:(RCTPromiseResolveBlock)resolve
            @"RCTHealthKitTypesKey": RCTHealthKitTypesKey,
            @"RCTHealthKitTypeOperationReadKey": RCTHealthKitTypeOperationReadKey,
            @"RCTHealthKitTypeOperationWriteKey": RCTHealthKitTypeOperationWriteKey,
-           @"RCTHealthKitTypeDateOfBirth": RCTHealthKitTypeDateOfBirth,
-           @"RCTHealthKitTypeWeight": RCTHealthKitTypeWeight,
-           @"RCTHealthKitTypeWorkout": RCTHealthKitTypeWorkout,
-           @"RCTHealthKitAuthorizationStatusAuthorized": RCTHealthKitAuthorizationStatusAuthorized,
-           @"RCTHealthKitAuthorizationStatusDenied": RCTHealthKitAuthorizationStatusDenied,
-           @"RCTHealthKitAuthorizationStatusNotDetermined": RCTHealthKitAuthorizationStatusNotDetermined,
-           @"RCTHealthKitUnitTypeKilo": RCTHealthKitUnitTypeKilo,
-           @"RCTHealthKitUnitTypePounds": RCTHealthKitUnitTypePounds,
-           @"RCTHealthKitWorkoutActivityArchery": [NSNumber numberWithInteger:HKWorkoutActivityTypeArchery],
-           @"RCTHealthKitWorkoutActivityBowling": [NSNumber numberWithInteger:HKWorkoutActivityTypeBowling],
-           @"RCTHealthKitWorkoutActivityFencing": [NSNumber numberWithInteger:HKWorkoutActivityTypeFencing],
-           @"RCTHealthKitWorkoutActivityGymnastics": [NSNumber numberWithInteger:HKWorkoutActivityTypeGymnastics],
-           @"RCTHealthKitWorkoutActivityTrackAndField": [NSNumber numberWithInteger:HKWorkoutActivityTypeTrackAndField],
-           @"RCTHealthKitWorkoutActivityAmericanFootball": [NSNumber numberWithInteger:HKWorkoutActivityTypeAmericanFootball],
-           @"RCTHealthKitWorkoutActivityAustralianFootball": [NSNumber numberWithInteger:HKWorkoutActivityTypeAustralianFootball],
-           @"RCTHealthKitWorkoutActivityBaseball": [NSNumber numberWithInteger:HKWorkoutActivityTypeBaseball],
-           @"RCTHealthKitWorkoutActivityBasketball": [NSNumber numberWithInteger:HKWorkoutActivityTypeBasketball],
-           @"RCTHealthKitWorkoutActivityCricket": [NSNumber numberWithInteger:HKWorkoutActivityTypeCricket],
-           @"RCTHealthKitWorkoutActivityHandball": [NSNumber numberWithInteger:HKWorkoutActivityTypeHandball],
-           @"RCTHealthKitWorkoutActivityHockey": [NSNumber numberWithInteger:HKWorkoutActivityTypeHockey],
-           @"RCTHealthKitWorkoutActivityLacrosse": [NSNumber numberWithInteger:HKWorkoutActivityTypeLacrosse],
-           @"RCTHealthKitWorkoutActivityRugby": [NSNumber numberWithInteger:HKWorkoutActivityTypeRugby],
-           @"RCTHealthKitWorkoutActivitySoccer": [NSNumber numberWithInteger:HKWorkoutActivityTypeSoccer],
-           @"RCTHealthKitWorkoutActivitySoftball": [NSNumber numberWithInteger:HKWorkoutActivityTypeSoftball],
-           @"RCTHealthKitWorkoutActivityVolleyball": [NSNumber numberWithInteger:HKWorkoutActivityTypeVolleyball],
-           @"RCTHealthKitWorkoutActivityPreparationAndRecovery": [NSNumber numberWithInteger:HKWorkoutActivityTypePreparationAndRecovery],
-           @"RCTHealthKitWorkoutActivityFlexibility": [NSNumber numberWithInteger:HKWorkoutActivityTypeFlexibility],
-           @"RCTHealthKitWorkoutActivityTypeWalking": [NSNumber numberWithInteger:HKWorkoutActivityTypeWalking],
-           @"RCTHealthKitWorkoutActivityRunning": [NSNumber numberWithInteger:HKWorkoutActivityTypeRunning],
-           @"RCTHealthKitWorkoutActivityWheelchairWalkPace": [NSNumber numberWithInteger:HKWorkoutActivityTypeWheelchairWalkPace],
-           @"RCTHealthKitWorkoutActivityWheelchairRunPace": [NSNumber numberWithInteger:HKWorkoutActivityTypeWheelchairRunPace],
-           @"RCTHealthKitWorkoutActivityCycling": [NSNumber numberWithInteger:HKWorkoutActivityTypeCycling],
-           @"RCTHealthKitWorkoutActivityHandCycling": [NSNumber numberWithInteger:HKWorkoutActivityTypeHandCycling],
-           @"RCTHealthKitWorkoutActivityCoreTraining": [NSNumber numberWithInteger:HKWorkoutActivityTypeCoreTraining],
-           @"RCTHealthKitWorkoutActivityElliptical": [NSNumber numberWithInteger:HKWorkoutActivityTypeElliptical],
-           @"RCTHealthKitWorkoutActivityFunctionalStrengthTraining": [NSNumber numberWithInteger:HKWorkoutActivityTypeFunctionalStrengthTraining],
-           @"RCTHealthKitWorkoutActivityTraditionalStrengthTraining": [NSNumber numberWithInteger:HKWorkoutActivityTypeTraditionalStrengthTraining],
-           @"RCTHealthKitWorkoutActivityCrossTraining": [NSNumber numberWithInteger:HKWorkoutActivityTypeCrossTraining],
-           @"RCTHealthKitWorkoutActivityMixedCardio": [NSNumber numberWithInteger:HKWorkoutActivityTypeMixedCardio],
-           @"RCTHealthKitWorkoutActivityHighIntensityIntervalTraining": [NSNumber numberWithInteger:HKWorkoutActivityTypeHighIntensityIntervalTraining],
-           @"RCTHealthKitWorkoutActivityJumpRope": [NSNumber numberWithInteger:HKWorkoutActivityTypeJumpRope],
-           @"RCTHealthKitWorkoutActivityStairClimbing": [NSNumber numberWithInteger:HKWorkoutActivityTypeStairClimbing],
-           @"RCTHealthKitWorkoutActivityStairs": [NSNumber numberWithInteger:HKWorkoutActivityTypeStairs],
-           @"RCTHealthKitWorkoutActivityStepTraining": [NSNumber numberWithInteger:HKWorkoutActivityTypeStepTraining],
-           @"RCTHealthKitWorkoutActivityBarre": [NSNumber numberWithInteger:HKWorkoutActivityTypeBarre],
-           @"RCTHealthKitWorkoutActivityDance": [NSNumber numberWithInteger:HKWorkoutActivityTypeDance],
-           @"RCTHealthKitWorkoutActivityYoga": [NSNumber numberWithInteger:HKWorkoutActivityTypeYoga],
-           @"RCTHealthKitWorkoutActivityMindAndBody": [NSNumber numberWithInteger:HKWorkoutActivityTypeMindAndBody],
-           @"RCTHealthKitWorkoutActivityPilates": [NSNumber numberWithInteger:HKWorkoutActivityTypePilates],
-           @"RCTHealthKitWorkoutActivityBadminton": [NSNumber numberWithInteger:HKWorkoutActivityTypeBadminton],
-           @"RCTHealthKitWorkoutActivityRacquetball": [NSNumber numberWithInteger:HKWorkoutActivityTypeRacquetball],
-           @"RCTHealthKitWorkoutActivitySquash": [NSNumber numberWithInteger:HKWorkoutActivityTypeSquash],
-           @"RCTHealthKitWorkoutActivityTableTennis": [NSNumber numberWithInteger:HKWorkoutActivityTypeTableTennis],
-           @"RCTHealthKitWorkoutActivityTennis": [NSNumber numberWithInteger:HKWorkoutActivityTypeTennis],
-           @"RCTHealthKitWorkoutActivityClimbing": [NSNumber numberWithInteger:HKWorkoutActivityTypeClimbing],
-           @"RCTHealthKitWorkoutActivityEquestrianSports": [NSNumber numberWithInteger:HKWorkoutActivityTypeEquestrianSports],
-           @"RCTHealthKitWorkoutActivityFishing": [NSNumber numberWithInteger:HKWorkoutActivityTypeFishing],
-           @"RCTHealthKitWorkoutActivityGolf": [NSNumber numberWithInteger:HKWorkoutActivityTypeGolf],
-           @"RCTHealthKitWorkoutActivityHiking": [NSNumber numberWithInteger:HKWorkoutActivityTypeHiking],
-           @"RCTHealthKitWorkoutActivityHunting": [NSNumber numberWithInteger:HKWorkoutActivityTypeHunting],
-           @"RCTHealthKitWorkoutActivityPlay": [NSNumber numberWithInteger:HKWorkoutActivityTypePlay],
-           @"RCTHealthKitWorkoutActivityCrossCountrySkiing": [NSNumber numberWithInteger:HKWorkoutActivityTypeCrossCountrySkiing],
-           @"RCTHealthKitWorkoutActivityCurling": [NSNumber numberWithInteger:HKWorkoutActivityTypeCurling],
-           @"RCTHealthKitWorkoutActivityDownhillSkiing": [NSNumber numberWithInteger:HKWorkoutActivityTypeDownhillSkiing],
-           @"RCTHealthKitWorkoutActivitySnowSports": [NSNumber numberWithInteger:HKWorkoutActivityTypeSnowSports],
-           @"RCTHealthKitWorkoutActivitySnowboarding": [NSNumber numberWithInteger:HKWorkoutActivityTypeSnowboarding],
-           @"RCTHealthKitWorkoutActivitySkatingSports": [NSNumber numberWithInteger:HKWorkoutActivityTypeSkatingSports],
-           @"RCTHealthKitWorkoutActivityPaddleSports": [NSNumber numberWithInteger:HKWorkoutActivityTypePaddleSports],
-           @"RCTHealthKitWorkoutActivityRowing": [NSNumber numberWithInteger:HKWorkoutActivityTypeRowing],
-           @"RCTHealthKitWorkoutActivitySailing": [NSNumber numberWithInteger:HKWorkoutActivityTypeSailing],
-           @"RCTHealthKitWorkoutActivitySurfingSports": [NSNumber numberWithInteger:HKWorkoutActivityTypeSurfingSports],
-           @"RCTHealthKitWorkoutActivitySwimming": [NSNumber numberWithInteger:HKWorkoutActivityTypeSwimming],
-           @"RCTHealthKitWorkoutActivityWaterFitness": [NSNumber numberWithInteger:HKWorkoutActivityTypeWaterFitness],
-           @"RCTHealthKitWorkoutActivityWaterPolo": [NSNumber numberWithInteger:HKWorkoutActivityTypeWaterPolo],
-           @"RCTHealthKitWorkoutActivityWaterSports": [NSNumber numberWithInteger:HKWorkoutActivityTypeWaterSports],
-           @"RCTHealthKitWorkoutActivityBoxing": [NSNumber numberWithInteger:HKWorkoutActivityTypeBoxing],
-           @"RCTHealthKitWorkoutActivityKickboxing": [NSNumber numberWithInteger:HKWorkoutActivityTypeKickboxing],
-           @"RCTHealthKitWorkoutActivityMartialArts": [NSNumber numberWithInteger:HKWorkoutActivityTypeMartialArts],
-           @"RCTHealthKitWorkoutActivityTaiChi": [NSNumber numberWithInteger:HKWorkoutActivityTypeTaiChi],
-           @"RCTHealthKitWorkoutActivityWrestling": [NSNumber numberWithInteger:HKWorkoutActivityTypeWrestling],
-           @"RCTHealthKitWorkoutActivityTypeOther": [NSNumber numberWithInteger:HKWorkoutActivityTypeOther],
+           @"dataTypes": RCTHealthKitDataModels.dataTypes,
+           @"units": RCTHealthKitDataModels.units,
+           @"permissionStatus": RCTHealthKitDataModels.permissionStatus,
+           @"quantities": RCTHealthKitDataModels.quantitiesDict,
+           @"workouts": RCTHealthKitDataModels.workoutsDict,
            };
 }
 
