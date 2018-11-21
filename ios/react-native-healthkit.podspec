@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.author              = author
   s.platform            = :ios, "9.0"
   s.source              = { :git => giturl, :tag => version }
-  s.source_files        = 'react-native-healthkit/*.{h,m}'
+  s.source_files        = 'react-native-healthkit/**/*.{h,m}'
   s.requires_arc        = true
 
 
