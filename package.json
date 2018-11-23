@@ -1,6 +1,6 @@
 {
   "name": "react-native-healthkit",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Native Module bridge for the Apple Health Kit",
   "main": "index.js",
   "bugs": {
