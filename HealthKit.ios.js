@@ -21,13 +21,8 @@ export default {
     const dateOfBirth = await RNHealthKit.getDateOfBirth();
     return new Date(dateOfBirth);
   },
-  addWorkout: (workout) =>
-    RNHealthKit.addWorkout(
-      workout.startDate,
-      workout.endDate,
-      workout.calories,
-      workout.metadata,
-    ),
+  addWorkout: ({ startDate, endDate, calories, metadata }) =>
+    RNHealthKit.addWorkout(startDate, endDate, calories, metadata),
   getWorkouts: async (startDate = null, endDate = null) => {
     const workouts = await RNHealthKit.getWorkouts(startDate, endDate);
     return workouts.map(convertWorkoutDates);
@@ -38,6 +33,12 @@ export default {
   ) => {
     const workouts = await RNHealthKit.getWorkoutsByMetadata(key, value);
     return workouts.map(convertWorkoutDates);
+  },
+  deleteWorkoutsByMetadata: (key, value) =>
+    RNHealthKit.deleteWorkoutsByMetadata(key, value),
+  editWorkoutByMetadata: async (key, value, { startDate, endDate, calories, metadata }) => {
+    await RNHealthKit.deleteWorkoutsByMetadata(key, value);
+    await RNHealthKit.addWorkout(startDate, endDate, calories, metadata);
   },
   getWeights: async (unit, startDate, endDate) => {
     if (!unit) {

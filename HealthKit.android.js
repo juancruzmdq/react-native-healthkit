@@ -16,6 +16,8 @@ export default {
     value,
   ) =>
     Promise.resolve([]),
+  deleteWorkoutsByMetadata: async () => Promise.resolve(false),
+  editWorkoutByMetadata: async () => Promise.resolve(false),
   getWeights: async (unit, startDate, endDate) =>
     Promise.resolve([]),
   addWeight: async (weight, unit, date = null) =>

@@ -5,6 +5,11 @@
 - (void)_getDateOfBirth:(RCTPromiseResolveBlock)resolve
               rejecter:(RCTPromiseRejectBlock)reject;
 
+- (void)_getDefaultSource:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject;
+
+#pragma mark - Workouts
+
 - (void)_addWorkout:(NSDate*)startDate
             endDate:(NSDate*)endDate
            calories:(float)calories
@@ -22,8 +27,10 @@
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject;
 
-- (void)_getDefaultSource:(RCTPromiseResolveBlock)resolve
-              reject:(RCTPromiseRejectBlock)reject;
+- (void)_deleteWorkoutsByMetadata:(NSString*)key
+                            value:(NSString*)value
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject;
 
 #pragma mark - Weight
 

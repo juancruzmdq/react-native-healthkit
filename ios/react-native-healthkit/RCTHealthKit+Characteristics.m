@@ -2,6 +2,16 @@
 #import "RCTHealthKit+Utils.h"
 #import <React/RCTConvert.h>
 
+typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error);
+
+@interface RCTHealthKit ()
+
+- (NSDictionary*)convertHKSample:(HKSample*)sample unit:(HKUnit *)unit;
+- (NSDictionary*)convertHKSource:(HKSource*)source;
+- (void)findWorkoutByMetadata:(NSString *)key value:(NSString *)value resultsHandler:(ResultsHandler)handler;
+
+@end
+
 @implementation RCTHealthKit (Characteristics)
 
 - (void)_getDateOfBirth:(RCTPromiseResolveBlock)resolve
@@ -18,6 +28,14 @@
   NSDate *dateOfBirth = [calendar dateFromComponents:dateOfBirthComponents];
   resolve(@([dateOfBirth timeIntervalSince1970]));
 }
+
+- (void)_getDefaultSource:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject {
+    HKSource *source = [HKSource defaultSource];
+    resolve([self convertHKSource:source]);
+}
+
+#pragma mark - Workouts
 
 - (void)_addWorkout:(NSDate*)startDate
             endDate:(NSDate*)endDate
@@ -37,41 +55,6 @@
         }
         resolve(nil);
     }];
-}
-
-- (NSDictionary*)convertHKSample:(HKSample*)sample unit:(HKUnit *)unit {
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    NSDateFormatter *dateFormatter = [NSDateFormatter new];
-    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
-    dateFormatter.dateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'";
-    if([sample startDate]){
-        dictionary[@"startDate"] = [dateFormatter stringFromDate:[sample startDate]];
-    }
-    if([sample endDate]) {
-        dictionary[@"endDate"] = [dateFormatter stringFromDate:[sample endDate]];
-    }
-    if([sample isKindOfClass:[HKWorkout class]]) {
-        if ([((HKWorkout *)sample) totalEnergyBurned]) {
-            double calories = [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit smallCalorieUnit]];
-            dictionary[@"calories"] = [NSNumber numberWithFloat:calories];
-        }
-        if ([((HKWorkout *)sample) totalDistance]) {
-            double distance = [[((HKWorkout *)sample) totalDistance] doubleValueForUnit:[HKUnit meterUnitWithMetricPrefix:HKMetricPrefixKilo]];
-            dictionary[@"distance"] = [NSNumber numberWithFloat:distance];
-        }
-        dictionary[@"activityType"] = [[NSNumber alloc] initWithInt:[((HKWorkout *)sample) workoutActivityType]];
-    }
-    if([sample isKindOfClass:[HKQuantitySample class]]) {
-        HKQuantitySample *quantity = (HKQuantitySample *)sample;
-        dictionary[@"count"] = @([quantity.quantity doubleValueForUnit:unit]);
-    }
-    if([sample metadata]) {
-        dictionary[@"metadata"] = [sample metadata];
-    }
-    dictionary[@"id"] = [[sample UUID] UUIDString];
-    dictionary[@"source"] = [self convertHKSource:[[sample sourceRevision] source]];
-    return dictionary;
 }
 
 - (void)_getWorkoutsWithStartDate:(NSDate*)startDate
@@ -99,36 +82,42 @@
                         value:(NSString*)value
                         resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject {
-    HKQuery *sourceQuery = [HKQuery predicateForObjectsFromSource:[HKSource defaultSource]];
-    HKQuery *metadataQuery = [HKQuery predicateForObjectsWithMetadataKey:key operatorType:NSEqualToPredicateOperatorType value:value];
-    HKQuery *query = [NSCompoundPredicate andPredicateWithSubpredicates:@[sourceQuery, metadataQuery]];
-    HKSampleType *sampleType = [HKSampleType workoutType];
-    HKSampleQuery *sampleQuery = [[HKSampleQuery alloc] initWithSampleType:sampleType predicate:query limit:0 sortDescriptors:nil resultsHandler:^(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error) {
-        if(error) {
-            reject(@"RCTHealthKit_read_workouts_fail", @"An error occured while reading workouts", error);
-        } else {
-            NSMutableArray *array = [[NSMutableArray alloc] init];
-            for(id object in results) {
-                [array addObject:[self convertHKSample:object unit:nil]];
-            }
-            resolve(array);
+    [self findWorkoutByMetadata:key
+                          value:value
+                 resultsHandler:^(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error) {
+                     if(error) {
+                         reject(@"RCTHealthKit_read_workouts_fail", @"An error occured while reading workouts", error);
+                     } else {
+                         NSMutableArray *array = [[NSMutableArray alloc] init];
+                         for(id object in results) {
+                             [array addObject:[self convertHKSample:object unit:nil]];
+                         }
+                         resolve(array);
+                     }
+                 }];
+}
+
+
+- (void)_deleteWorkoutsByMetadata:(NSString*)key
+                            value:(NSString*)value
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject {
+    __weak RCTHealthKit *weakSelf = self;
+    [self findWorkoutByMetadata:key value:value resultsHandler:^(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error) {
+        if (error) {
+            reject(@"RCTHealthKit_delete_workouts_fail", @"An error occurred while searching workouts to delete", error);
+            return;
         }
+
+        [weakSelf._healthStore deleteObjects:results withCompletion:^(BOOL success, NSError * _Nullable error) {
+            if (error) {
+                reject(@"RCTHealthKit_delete_workouts_fail", @"An error occurred while delete workouts", error);
+                return;
+            }
+
+            resolve(@(success));
+        }];
     }];
-
-    [[self _healthStore] executeQuery:sampleQuery];
-}
-
-- (NSDictionary*)convertHKSource:(HKSource*)source {
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    dictionary[@"name"] = [source name];
-    dictionary[@"bundleIdentifier"] = [source bundleIdentifier];
-    return dictionary;
-}
-
-- (void)_getDefaultSource:(RCTPromiseResolveBlock)resolve
-              reject:(RCTPromiseRejectBlock)reject {
-    HKSource *source = [HKSource defaultSource];
-    resolve([self convertHKSource:source]);
 }
 
 #pragma mark - Weight
@@ -221,6 +210,64 @@
                                   ];
 
     [self._healthStore executeQuery:sampleQuery];
+}
+
+#pragma mark - Private Methods
+
+- (NSDictionary*)convertHKSample:(HKSample*)sample unit:(HKUnit *)unit {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    dateFormatter.dateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'";
+    if([sample startDate]){
+        dictionary[@"startDate"] = [dateFormatter stringFromDate:[sample startDate]];
+    }
+    if([sample endDate]) {
+        dictionary[@"endDate"] = [dateFormatter stringFromDate:[sample endDate]];
+    }
+    if([sample isKindOfClass:[HKWorkout class]]) {
+        if ([((HKWorkout *)sample) totalEnergyBurned]) {
+            double calories = [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit smallCalorieUnit]];
+            dictionary[@"calories"] = [NSNumber numberWithFloat:calories];
+        }
+        if ([((HKWorkout *)sample) totalDistance]) {
+            double distance = [[((HKWorkout *)sample) totalDistance] doubleValueForUnit:[HKUnit meterUnitWithMetricPrefix:HKMetricPrefixKilo]];
+            dictionary[@"distance"] = [NSNumber numberWithFloat:distance];
+        }
+        dictionary[@"activityType"] = [[NSNumber alloc] initWithInt:[((HKWorkout *)sample) workoutActivityType]];
+    }
+    if([sample isKindOfClass:[HKQuantitySample class]]) {
+        HKQuantitySample *quantity = (HKQuantitySample *)sample;
+        dictionary[@"count"] = @([quantity.quantity doubleValueForUnit:unit]);
+    }
+    if([sample metadata]) {
+        dictionary[@"metadata"] = [sample metadata];
+    }
+    dictionary[@"id"] = [[sample UUID] UUIDString];
+    dictionary[@"source"] = [self convertHKSource:[[sample sourceRevision] source]];
+    return dictionary;
+}
+
+- (NSDictionary*)convertHKSource:(HKSource*)source {
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+    dictionary[@"name"] = [source name];
+    dictionary[@"bundleIdentifier"] = [source bundleIdentifier];
+    return dictionary;
+}
+
+- (void)findWorkoutByMetadata:(NSString *)key value:(NSString *)value resultsHandler:(ResultsHandler)handler {
+    HKQuery *sourceQuery = [HKQuery predicateForObjectsFromSource:[HKSource defaultSource]];
+    HKQuery *metadataQuery = [HKQuery predicateForObjectsWithMetadataKey:key operatorType:NSEqualToPredicateOperatorType value:value];
+    HKQuery *query = [NSCompoundPredicate andPredicateWithSubpredicates:@[sourceQuery, metadataQuery]];
+    HKSampleType *sampleType = [HKSampleType workoutType];
+    HKSampleQuery *sampleQuery = [[HKSampleQuery alloc] initWithSampleType:sampleType
+                                                                 predicate:query
+                                                                     limit:0
+                                                           sortDescriptors:nil
+                                                            resultsHandler:handler];
+
+    [[self _healthStore] executeQuery:sampleQuery];
 }
 
 @end

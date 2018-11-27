@@ -82,6 +82,8 @@ RCT_EXPORT_METHOD(getDateOfBirth:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
   [self _getDateOfBirth:resolve rejecter:reject];
 }
 
+#pragma mark - Workouts
+
 RCT_EXPORT_METHOD(addWorkout:(NSDate*)startDate
                   endDate:(NSDate*)endDate
                   calories:(float)calories
@@ -106,6 +108,14 @@ RCT_EXPORT_METHOD(getWorkoutsByMetadata:(NSString*)key
                   reject:(RCTPromiseRejectBlock)reject){
     [self _initializeHealthStore];
     [self _getWorkoutsByMetadata:key value:value resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(deleteWorkoutsByMetadata:(NSString*)key
+                    value:(NSString*)value
+                    resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject){
+    [self _initializeHealthStore];
+    [self _deleteWorkoutsByMetadata:key value:value resolve:resolve reject:reject];
 }
 
 #pragma mark - Weight
