@@ -13,6 +13,7 @@
 - (void)_addWorkout:(NSDate*)startDate
             endDate:(NSDate*)endDate
            calories:(float)calories
+   distanceInMeters:(float)distance
            metadata:(NSDictionary*)metadata
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject;

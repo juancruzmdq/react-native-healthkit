@@ -40,14 +40,22 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
 - (void)_addWorkout:(NSDate*)startDate
             endDate:(NSDate*)endDate
             calories:(float)calories
+   distanceInMeters:(float)distance
             metadata:(NSDictionary*)metadata
             resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject{
     HKUnit *caloriesUnit = [HKUnit calorieUnit];
     HKQuantity *caloriesQuantity = [HKQuantity quantityWithUnit:caloriesUnit doubleValue:calories];
+    HKQuantity *distanceQuantity = [HKQuantity quantityWithUnit:HKUnit.meterUnit doubleValue:distance];
 
-
-    HKWorkout *workout = [HKWorkout workoutWithActivityType:HKWorkoutActivityTypeOther startDate:startDate endDate:endDate duration:0 totalEnergyBurned:caloriesQuantity totalDistance:nil device:nil metadata:metadata];
+    HKWorkout *workout = [HKWorkout workoutWithActivityType:HKWorkoutActivityTypeOther
+                                                  startDate:startDate
+                                                    endDate:endDate
+                                                   duration:0
+                                          totalEnergyBurned:caloriesQuantity
+                                              totalDistance:distanceQuantity
+                                                     device:nil
+                                                   metadata:metadata];
 
     [self._healthStore saveObject:workout withCompletion:^(BOOL success, NSError * _Nullable error) {
         if(!success) {
