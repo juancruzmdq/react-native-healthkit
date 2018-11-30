@@ -46,7 +46,7 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
             reject:(RCTPromiseRejectBlock)reject{
     HKUnit *caloriesUnit = [HKUnit calorieUnit];
     HKQuantity *caloriesQuantity = [HKQuantity quantityWithUnit:caloriesUnit doubleValue:calories];
-    HKQuantity *distanceQuantity = [HKQuantity quantityWithUnit:HKUnit.meterUnit doubleValue:distance];
+    HKQuantity *distanceQuantity = distance != -1 ? [HKQuantity quantityWithUnit:HKUnit.meterUnit doubleValue:distance] : nil;
 
     HKWorkout *workout = [HKWorkout workoutWithActivityType:HKWorkoutActivityTypeOther
                                                   startDate:startDate
