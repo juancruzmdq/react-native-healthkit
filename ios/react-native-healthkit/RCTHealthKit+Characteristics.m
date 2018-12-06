@@ -60,6 +60,7 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
     [self._healthStore saveObject:workout withCompletion:^(BOOL success, NSError * _Nullable error) {
         if(!success) {
             reject(@"RCTHealthKit_save_workout_fail", @"An error occurred while saving the workout", error);
+            return;
         }
         resolve(nil);
     }];
@@ -177,6 +178,7 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!success) {
                 reject(@"RCTHealthKit_add_weight_fail", @"An error occurred while saving the weight", error);
+                return;
             }
             resolve(nil);
         });
