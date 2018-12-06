@@ -44,7 +44,7 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
             metadata:(NSDictionary*)metadata
             resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject{
-    HKUnit *caloriesUnit = [HKUnit calorieUnit];
+    HKUnit *caloriesUnit = [HKUnit kilocalorieUnit];
     HKQuantity *caloriesQuantity = [HKQuantity quantityWithUnit:caloriesUnit doubleValue:calories];
     HKQuantity *distanceQuantity = distance != -1 ? [HKQuantity quantityWithUnit:HKUnit.meterUnit doubleValue:distance] : nil;
 
@@ -236,7 +236,7 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
     }
     if([sample isKindOfClass:[HKWorkout class]]) {
         if ([((HKWorkout *)sample) totalEnergyBurned]) {
-            double calories = [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit smallCalorieUnit]];
+            double calories = [[((HKWorkout *)sample) totalEnergyBurned] doubleValueForUnit:[HKUnit kilocalorieUnit]];
             dictionary[@"calories"] = [NSNumber numberWithFloat:calories];
         }
         if ([((HKWorkout *)sample) totalDistance]) {
