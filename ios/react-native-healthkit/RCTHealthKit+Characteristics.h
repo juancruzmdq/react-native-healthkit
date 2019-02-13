@@ -10,7 +10,8 @@
 
 #pragma mark - Workouts
 
-- (void)_addWorkout:(NSDate*)startDate
+- (void)_addWorkout:(NSString*)activityType
+          startDate:(NSDate*)startDate
             endDate:(NSDate*)endDate
            calories:(float)calories
    distanceInMeters:(float)distance

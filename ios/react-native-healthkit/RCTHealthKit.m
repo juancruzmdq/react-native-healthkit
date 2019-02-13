@@ -84,7 +84,8 @@ RCT_EXPORT_METHOD(getDateOfBirth:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 
 #pragma mark - Workouts
 
-RCT_EXPORT_METHOD(addWorkout:(NSDate*)startDate
+RCT_EXPORT_METHOD(addWorkout:(NSString*)activityType
+                  startDate:(NSDate*)startDate
                   endDate:(NSDate*)endDate
                   calories:(float)calories
           distanceInMeters:(float)distance
@@ -92,7 +93,8 @@ RCT_EXPORT_METHOD(addWorkout:(NSDate*)startDate
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
     [self _initializeHealthStore];
-    [self _addWorkout:startDate 
+    [self _addWorkout:activityType
+            startDate:startDate
               endDate:endDate
              calories:calories
      distanceInMeters:distance
