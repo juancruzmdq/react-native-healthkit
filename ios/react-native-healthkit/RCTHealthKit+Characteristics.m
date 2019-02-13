@@ -1,6 +1,7 @@
 #import "RCTHealthKit+Characteristics.h"
 #import "RCTHealthKit+Utils.h"
 #import <React/RCTConvert.h>
+#import "RCTHealthKitDataModels.h"
 
 typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof HKSample *> * _Nullable results, NSError * _Nullable error);
 
@@ -37,18 +38,20 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
 
 #pragma mark - Workouts
 
-- (void)_addWorkout:(NSDate*)startDate
+- (void)_addWorkout:(NSString*)activityType
+          startDate:(NSDate*)startDate
             endDate:(NSDate*)endDate
-            calories:(float)calories
+           calories:(float)calories
    distanceInMeters:(float)distance
-            metadata:(NSDictionary*)metadata
+           metadata:(NSDictionary*)metadata
             resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject{
+             reject:(RCTPromiseRejectBlock)reject{
     HKUnit *caloriesUnit = [HKUnit kilocalorieUnit];
     HKQuantity *caloriesQuantity = [HKQuantity quantityWithUnit:caloriesUnit doubleValue:calories];
     HKQuantity *distanceQuantity = distance != -1 ? [HKQuantity quantityWithUnit:HKUnit.meterUnit doubleValue:distance] : nil;
-
-    HKWorkout *workout = [HKWorkout workoutWithActivityType:HKWorkoutActivityTypeOther
+    HKWorkoutActivityType type = [RCTHealthKitDataModels.workoutsDict objectForKey:activityType] ? [RCTHealthKitDataModels.workoutsDict[activityType] intValue] : HKWorkoutActivityTypeOther;
+    
+    HKWorkout *workout = [HKWorkout workoutWithActivityType:type
                                                   startDate:startDate
                                                     endDate:endDate
                                                    duration:0
@@ -56,7 +59,7 @@ typedef void(^ResultsHandler)(HKSampleQuery * _Nonnull query, NSArray<__kindof H
                                               totalDistance:distanceQuantity
                                                      device:nil
                                                    metadata:metadata];
-
+    
     [self._healthStore saveObject:workout withCompletion:^(BOOL success, NSError * _Nullable error) {
         if(!success) {
             reject(@"RCTHealthKit_save_workout_fail", @"An error occurred while saving the workout", error);
