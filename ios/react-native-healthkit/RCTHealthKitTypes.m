@@ -63,4 +63,22 @@ NSString * RCTHealthKitUnitTypeCalories = @"Calories";
     return hkTypes;
 }
 
++ (HKQuantityTypeIdentifier)_getDistanceTypeForActivity:(HKWorkoutActivityType)activityType {
+    switch (activityType) {
+        case HKWorkoutActivityTypeHandCycling:
+        case HKWorkoutActivityTypeCycling:
+            return HKQuantityTypeIdentifierDistanceCycling;
+        case HKWorkoutActivityTypeWheelchairWalkPace:
+        case HKWorkoutActivityTypeWheelchairRunPace:
+            return HKQuantityTypeIdentifierDistanceWheelchair;
+        case HKWorkoutActivityTypeSwimming:
+            return HKQuantityTypeIdentifierDistanceSwimming;
+        case HKWorkoutActivityTypeSnowSports:
+        case HKWorkoutActivityTypeDownhillSkiing:
+            return HKQuantityTypeIdentifierDistanceDownhillSnowSports;
+        default:
+            return HKQuantityTypeIdentifierDistanceWalkingRunning;
+    }
+}
+
 @end

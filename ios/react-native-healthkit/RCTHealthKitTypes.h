@@ -23,5 +23,6 @@ FOUNDATION_EXPORT NSString * RCTHealthKitUnitTypeCalories;
 + (NSSet *)_getReadHKTypes:(NSArray *)types;
 + (NSSet *)_getWriteHKTypes:(NSArray *)types;
 + (HKObjectType *)_getWriteType:(NSString *)type;
++ (HKQuantityTypeIdentifier)_getDistanceTypeForActivity:(HKWorkoutActivityType)activityType;
 
 @end
